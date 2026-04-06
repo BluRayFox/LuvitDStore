@@ -2,10 +2,9 @@ local utils = {}
 local fs = require('fs')
 
 utils.ensureDir = function(path)
-    local exist = fs.statSync(path)
-    if exist then return true end
-
-    fs.mkdir(path)
+    if not fs.existsSync(path) then
+        fs.mkdirSync(path)
+    end
 end
 
 return utils
