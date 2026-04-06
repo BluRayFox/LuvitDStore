@@ -4,8 +4,13 @@ local utils = require('./modules/utils')
 local datastore = require('./modules/datastore')    -- Datastore Handler
 
 
+
 datastore:load()
-datastore:set(nil, 1, 'test', 'hi')
+
+local testToken = datastore:newToken()
+datastore.tokens[testToken].uIDs = {1}
+
+datastore:set(testToken, 1, 'test', 'hi')
 
 
 http.createServer(function(req, res)

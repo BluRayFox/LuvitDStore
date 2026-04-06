@@ -8,6 +8,28 @@ local fs = require('fs')
 local data = {}
 local tokens = {}
 
+local function tokenCheck(token, uni)
+    if type(token) ~= 'string' then
+        error('Invalid token provided.', 3)
+    elseif type(uni) ~= 'number' then
+        error('Invalid universe provided.', 3)
+    end
+
+    if not tokens[token] then
+        error('Such token does not exist.')
+    elseif not tokens[token].uIDs then
+        error('Invalid token format.')
+    end
+
+    for i, id in ipairs(tokens[token].uIDs) do
+        if id == uni then
+            return true
+        end
+    end
+
+    return false
+end
+
 function datastore:load()
     utils.ensureDir('./data/')
     utils.ensureDir('./data/universes/')
@@ -16,6 +38,7 @@ function datastore:load()
     local tokensDecoded = (tokensData and json.decode(tokensData)) or {}
 
     tokens = tokensDecoded
+    datastore.tokens = tokens
 
     print('Datastore Loaded.')
 end
@@ -23,10 +46,12 @@ end
 function datastore:save()
     local tokensEncoded = json.encode(tokens)
     fs.writeFileSync('./data/tokens.json', tokensEncoded)
-
 end
 
 function datastore:get(token, uni, key)
+    local pass = tokenCheck(token, uni)
+    if not pass then return end
+
     local path = ('./data/universes/%s/'):format(uni)
     utils.ensureDir(path)
 
@@ -37,6 +62,9 @@ function datastore:get(token, uni, key)
 end
 
 function datastore:set(token, uni, key, val)
+    local pass = tokenCheck(token, uni)
+    if not pass then return end
+
     local path = ('./data/universes/%s/'):format(uni)
     utils.ensureDir(path)
 
