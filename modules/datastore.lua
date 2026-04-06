@@ -12,8 +12,8 @@ function datastore:load()
     utils.ensureDir('./data/')
     utils.ensureDir('./data/universes/')
 
-    local tokensData = fs.readFileSync('./data/tokens.json') or '[]'
-    local tokensDecoded = json.decode(tokensData) or {}
+    local tokensData = fs.readFileSync('./data/tokens.json')
+    local tokensDecoded = (tokensData and json.decode(tokensData)) or {}
 
     tokens = tokensDecoded
 
@@ -43,7 +43,7 @@ function datastore:set(token, uni, key, val)
     if type(val) == "table" then val = json.encode(val) end
 
     local data = fs.readFileSync(path .. 'data.json')
-    local decoded = json.decode(data) or {}; data = nil
+    local decoded = data and json.decode(data) or {}; data = nil
 
     decoded[key] = val
 
